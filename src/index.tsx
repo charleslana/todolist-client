@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import Loading from './components/Loading';
 import rootReducer from './reducers';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
@@ -14,4 +15,13 @@ ReactDOM.render(
         </Provider>
     </React.StrictMode>,
     document.getElementById('root')
+);
+
+ReactDOM.render(
+    <React.StrictMode>
+        <Provider store={store}>
+            <Loading/>
+        </Provider>
+    </React.StrictMode>,
+    document.getElementById('loading')
 );

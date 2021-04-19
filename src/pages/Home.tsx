@@ -18,10 +18,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actions as todoActions} from '../reducers/todo';
+import {actions as loadingActions} from '../reducers/loading';
 
 interface MyProps {
     todoActions: any;
     todo: any;
+    loadingActions: any;
 }
 
 interface MyState {
@@ -36,7 +38,8 @@ class Home extends Component<MyProps & MyState> {
             id: 0,
             title: '',
             completed: false
-        }
+        },
+        intervalId: 0
     }
 
     handleChangeFilter = (event: ChangeEvent<HTMLSelectElement & any>) => {
@@ -63,9 +66,20 @@ class Home extends Component<MyProps & MyState> {
     }
 
     handleDelete = (value: any) => (event: any) => {
+        const {loadingActions} = this.props;
         const {todoActions} = this.props;
-        todoActions.delete(value);
+        loadingActions.open(true);
+        //todoActions.delete(value);
         this.closeDeleteDialog();
+
+        // close backdrop
+        let time = 1000;
+        let intervalId = setInterval(() => {
+            clearInterval(this.state.intervalId);
+            todoActions.delete(value);
+            loadingActions.close(false);
+        }, time);
+        this.setState({intervalId: intervalId});
     }
 
     filterTodoItems = (item: any) => {
@@ -88,6 +102,10 @@ class Home extends Component<MyProps & MyState> {
 
     closeDeleteDialog = () => {
         this.setState({open: false});
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.state.intervalId);
     }
 
     render() {
@@ -171,6 +189,9 @@ class Home extends Component<MyProps & MyState> {
 }
 
 const mapStateToProps = ({todo}: any) => ({todo});
-const mapDispatchToProps = (dispatch: any) => ({todoActions: bindActionCreators(todoActions, dispatch)});
+const mapDispatchToProps = (dispatch: any) => ({
+    todoActions: bindActionCreators(todoActions, dispatch),
+    loadingActions: bindActionCreators(loadingActions, dispatch)
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

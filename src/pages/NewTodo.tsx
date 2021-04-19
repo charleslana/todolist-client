@@ -7,12 +7,10 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import CheckIcon from '@material-ui/icons/Check';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import uniqueId from 'lodash/uniqueId';
-import {actions as todoActions} from '../reducers/todo';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import {actions as todoActions} from '../reducers/todo';
 
 interface MyProps {
     todoActions: any;
@@ -52,27 +50,13 @@ class NewTodo extends Component<MyProps & MyState> {
             };
             todoActions.create(item);
             this.setState({form: {title: ''}});
-            this.handleOpenBackdrop();
-            let time = 1000;
-            let intervalId = setInterval(() => {
-                this.handleCloseBackdrop();
-                this.handleBack();
-            }, time);
-            this.setState({intervalId: intervalId});
+            this.handleBack();
         }
     }
 
     handleBack = () => {
         const {history} = this.props;
         history.push('/');
-    }
-
-    handleOpenBackdrop = () => {
-        this.setState({backdropOpen: true});
-    }
-
-    handleCloseBackdrop = () => {
-        this.setState({backdropOpen: false});
     }
 
     componentWillUnmount() {
@@ -113,9 +97,6 @@ class NewTodo extends Component<MyProps & MyState> {
                         <ArrowBackIcon/>
                     </IconButton>
                 </Paper>
-                <Backdrop style={{color: '#fff', zIndex: 9999}} open={this.state.backdropOpen}>
-                    <CircularProgress color="inherit"/>
-                </Backdrop>
             </Grid>
         );
     }
