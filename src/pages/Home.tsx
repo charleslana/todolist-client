@@ -32,7 +32,11 @@ class Home extends Component<MyProps & MyState> {
     state = {
         filter: 'all',
         open: false,
-        value: {}
+        value: {
+            id: 0,
+            title: '',
+            completed: false
+        }
     }
 
     handleChangeFilter = (event: ChangeEvent<HTMLSelectElement & any>) => {
@@ -150,7 +154,7 @@ class Home extends Component<MyProps & MyState> {
                 >
                     <DialogTitle id="confirmation-dialog-title">Confirm delete to-do</DialogTitle>
                     <DialogContent dividers>
-                        <Typography align="center">Delete the to-do?</Typography>
+                        <Typography align="center">Delete {this.state.value.title}</Typography>
                     </DialogContent>
                     <DialogActions>
                         <Button autoFocus onClick={this.closeDeleteDialog} color="primary">
