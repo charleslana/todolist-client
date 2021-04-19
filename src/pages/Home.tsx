@@ -98,19 +98,19 @@ class Home extends Component<MyProps & MyState> {
                         <AddIcon/> Add new todo
                     </Button>
                     {todo.items.length ?
-                    <FormControl fullWidth style={{marginTop: 16}}>
-                        <Select
-                            value={filter}
-                            onChange={this.handleChangeFilter}
-                            name="filter"
-                            fullWidth
-                        >
-                            <MenuItem value='all'>All</MenuItem>
-                            <MenuItem value='completed'>Completed</MenuItem>
-                            <MenuItem value='active'>Active</MenuItem>
-                        </Select>
+                        <FormControl fullWidth style={{marginTop: 16}}>
+                            <Select
+                                value={filter}
+                                onChange={this.handleChangeFilter}
+                                name="filter"
+                                fullWidth
+                            >
+                                <MenuItem value='all'>All</MenuItem>
+                                <MenuItem value='completed'>Completed</MenuItem>
+                                <MenuItem value='active'>Active</MenuItem>
+                            </Select>
 
-                    </FormControl>
+                        </FormControl>
                         :
                         <Typography align="center" style={{marginTop: 16}}>The todo list is empty.</Typography>
                     }

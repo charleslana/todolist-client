@@ -29,7 +29,6 @@ class EditTodo extends Component<MyProps & MyState> {
         }
     }
 
-    // get active item by ID from router (match.params.id)
     componentDidMount() {
         const {match, todo} = this.props;
         const item = todo.items.find((item: any) => item.id === match.params.id) || {title: ''};
@@ -37,7 +36,6 @@ class EditTodo extends Component<MyProps & MyState> {
         this.setState({item});
     }
 
-    // handle change active item data
     handleChange = (name: any) => (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({
             item: {
@@ -46,8 +44,6 @@ class EditTodo extends Component<MyProps & MyState> {
             }
         });
     }
-
-    //handle submit to update todo on redux state and go back to home
 
     handleSubmit = (event: ChangeEvent<HTMLFormElement & any>) => {
         event.preventDefault();
@@ -61,7 +57,6 @@ class EditTodo extends Component<MyProps & MyState> {
         }
     }
 
-    //go back home
     goBack = () => {
         const {history} = this.props;
         history.goBack();
