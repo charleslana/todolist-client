@@ -3,77 +3,65 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import CheckIcon from '@material-ui/icons/Check';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import CheckIcon from '@material-ui/icons/Check';
+import uniqueId from 'lodash/uniqueId';
 import {actions as todoActions} from '../reducers/todo';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 
 interface MyProps {
     todoActions: any;
-    todo: any;
-    match: any;
 }
 
 interface MyState {
     history: any;
 }
 
-class EditTodo extends Component<MyProps & MyState> {
-
+class NewTodo extends Component<MyProps & MyState> {
     state = {
-        item: {
+        form: {
             title: ''
         }
     }
 
-    // get active item by ID from router (match.params.id)
-    componentDidMount() {
-        const {match, todo} = this.props;
-        const item = todo.items.find((item: any) => item.id === match.params.id) || {title: ''};
-
-        this.setState({item});
-    }
-
-    // handle change active item data
     handleChange = (name: any) => (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({
-            item: {
-                ...this.state.item,
-                [name]: event.target.value.trim()
+            form: {
+                ...this.state.form,
+                [name]: event.target.value
             }
-        });
+        })
     }
 
-    //handle submit to update todo on redux state and go back to home
-
-    handleSubmit = (event: ChangeEvent<HTMLFormElement & any>) => {
+    handleSubmit = (event: ChangeEvent<HTMLFormElement> & any) => {
         event.preventDefault();
-        const {item} = this.state;
-        if (item.title.trim()) {
+        const {form} = this.state;
+        if (form.title.trim()) {
             const {todoActions} = this.props;
-
-            todoActions.update(item);
-            this.goBack();
-
+            const item = {
+                id: uniqueId(),
+                title: form.title.trim(),
+                completed: false
+            };
+            todoActions.create(item);
+            this.setState({form: {title: ''}});
+            this.handleBack();
         }
     }
 
-    //go back home
-    goBack = () => {
+    handleBack = () => {
         const {history} = this.props;
-        history.goBack();
+        history.push('/');
     }
 
     render() {
-
-        const {item} = this.state;
-
+        const {form} = this.state;
         return (
             <Grid item xs={12} sm={6}>
-                <Typography variant={"h4"} align="center">Edit todo</Typography>
+                <Typography variant={"h4"} align="center">New todo</Typography>
                 <Paper style={{paddingLeft: 16, paddingRight: 16}}>
                     <form onSubmit={this.handleSubmit}>
                         <TextField
@@ -82,7 +70,7 @@ class EditTodo extends Component<MyProps & MyState> {
                             onChange={this.handleChange('title')}
                             fullWidth
                             margin="normal"
-                            value={item.title}
+                            value={form.title}
                             autoComplete="off"
                             autoFocus={true}
                             InputProps={{
@@ -98,18 +86,17 @@ class EditTodo extends Component<MyProps & MyState> {
 
                             }}
                         />
-                        <IconButton aria-label="Back" onClick={this.goBack}>
-                            <ArrowBackIcon/>
-                        </IconButton>
                     </form>
-
+                    <IconButton aria-label="Back" onClick={this.handleBack}>
+                        <ArrowBackIcon/>
+                    </IconButton>
                 </Paper>
             </Grid>
         );
     }
 }
 
-const mapStateToProps = ({todo}: any) => ({todo});
+const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch: any) => ({todoActions: bindActionCreators(todoActions, dispatch)});
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditTodo);
+export default connect(mapStateToProps, mapDispatchToProps)(NewTodo);

@@ -1,21 +1,23 @@
 import React, {ChangeEvent, Component} from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import {ListItem, ListItemSecondaryAction, ListItemText} from '@material-ui/core';
+import {FormControl, ListItem, ListItemSecondaryAction, ListItemText, MenuItem} from '@material-ui/core';
 import List from '@material-ui/core/List';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {MenuItem} from '@material-ui/core';
-import {FormControl} from '@material-ui/core';
 import Select from '@material-ui/core/Select';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actions as todoActions} from '../reducers/todo';
-import uniqueId from 'lodash/uniqueId';
 
 interface MyProps {
     todoActions: any;
@@ -28,45 +30,16 @@ interface MyState {
 
 class Home extends Component<MyProps & MyState> {
     state = {
-        form: {
-            title: ''
-        },
-        filter: 'all'
+        filter: 'all',
+        open: false,
+        value: {}
     }
-    // handle change filter
+
     handleChangeFilter = (event: ChangeEvent<HTMLSelectElement & any>) => {
         this.setState({filter: event.target.value});
     }
-    // handle change form data
-    handleChange = (name: any) => (event: ChangeEvent<HTMLInputElement>) => {
-        this.setState({
-            form: {
-                ...this.state.form,
-                [name]: event.target.value
-            }
-        })
-    }
 
-    //handle submit new todo
-
-    handleSubmit = (event: ChangeEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const {form} = this.state;
-        if (form.title) {
-            const {todoActions} = this.props;
-            const item = {
-                id: uniqueId(),
-                title: form.title,
-                completed: false
-            };
-            todoActions.create(item);
-            this.setState({form: {title: ''}});
-        }
-    }
-
-    // handle completed checkbox
     handleToggleCompleted = (value: any) => (event: any) => {
-
         const {todoActions} = this.props;
         const item = {
             ...value,
@@ -75,53 +48,57 @@ class Home extends Component<MyProps & MyState> {
         todoActions.update(item);
     }
 
-    // handle edit todo
+    handleNew = () => {
+        const {history} = this.props;
+        history.push('/new');
+    }
+
     handleEdit = (value: any) => (event: any) => {
         const {history} = this.props;
         history.push(`/edit/${value.id}`);
     }
 
-    // handle delete todo
     handleDelete = (value: any) => (event: any) => {
         const {todoActions} = this.props;
         todoActions.delete(value);
+        this.closeDeleteDialog();
     }
 
-    // filter todo items base on filter state
     filterTodoItems = (item: any) => {
         const {filter} = this.state;
         if (filter === 'completed') {
             return item.completed;
-        } else if (filter === 'active') {
-            return !item.completed;
-        } else {
-            return true;
         }
+        if (filter === 'active') {
+            return !item.completed;
+        }
+        return true;
     }
 
-    //render component
+    openDeleteDialog = (value: any) => (event: any) => {
+        this.setState({
+            value: value,
+            open: true
+        });
+    }
+
+    closeDeleteDialog = () => {
+        this.setState({open: false});
+    }
+
     render() {
         const {todo} = this.props;
-        const {form, filter} = this.state;
+        const {filter} = this.state;
 
         return (
             <Grid item xs={12} sm={6}>
-                <Typography align="center">Todos</Typography>
+                <Typography variant={"h4"} align="center">Todos</Typography>
                 <Paper style={{paddingLeft: 16, paddingRight: 16}}>
-                    <form onSubmit={this.handleSubmit}>
-                        <TextField
-                            id="todo"
-                            label="What needs to be done?"
-                            onChange={this.handleChange('title')}
-                            fullWidth
-                            margin="normal"
-                            value={form.title}
-                            autoComplete="off"
-                        />
-                    </form>
-
-                    {todo.items.length > 0 &&
-                    <FormControl fullWidth>
+                    <Button style={{marginTop: 16}} variant="contained" color="primary" onClick={this.handleNew}>
+                        <AddIcon/> Add new todo
+                    </Button>
+                    {todo.items.length ?
+                    <FormControl fullWidth style={{marginTop: 16}}>
                         <Select
                             value={filter}
                             onChange={this.handleChangeFilter}
@@ -134,8 +111,9 @@ class Home extends Component<MyProps & MyState> {
                         </Select>
 
                     </FormControl>
+                        :
+                        <Typography align="center" style={{marginTop: 16}}>The todo list is empty.</Typography>
                     }
-
                     <List>
                         {todo.items.filter(this.filterTodoItems).map((value: any) => (
                             <ListItem
@@ -154,7 +132,7 @@ class Home extends Component<MyProps & MyState> {
                                     <IconButton aria-label="Edit" onClick={this.handleEdit(value)}>
                                         <EditIcon/>
                                     </IconButton>
-                                    <IconButton aria-label="Delete" onClick={this.handleDelete(value)}>
+                                    <IconButton aria-label="Delete" onClick={this.openDeleteDialog(value)}>
                                         <DeleteIcon/>
                                     </IconButton>
                                 </ListItemSecondaryAction>
@@ -162,6 +140,27 @@ class Home extends Component<MyProps & MyState> {
                         ))}
                     </List>
                 </Paper>
+                <Dialog
+                    disableBackdropClick
+                    disableEscapeKeyDown
+                    maxWidth="xs"
+                    fullWidth={true}
+                    aria-labelledby="confirmation-dialog-title"
+                    open={this.state.open}
+                >
+                    <DialogTitle id="confirmation-dialog-title">Confirm delete to-do</DialogTitle>
+                    <DialogContent dividers>
+                        <Typography align="center">Delete the to-do?</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button autoFocus onClick={this.closeDeleteDialog} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={this.handleDelete(this.state.value)} color="primary">
+                            Ok
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Grid>
         );
     }
