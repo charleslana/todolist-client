@@ -19,11 +19,13 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actions as todoActions} from '../reducers/todo';
 import {actions as loadingActions} from '../reducers/loading';
+import {actions as toastActions} from '../reducers/toast';
 
 interface MyProps {
     todoActions: any;
     todo: any;
     loadingActions: any;
+    toastActions: any;
 }
 
 interface MyState {
@@ -67,6 +69,7 @@ class Home extends Component<MyProps & MyState> {
 
     handleDelete = (value: any) => (event: any) => {
         const {loadingActions} = this.props;
+        const {toastActions} = this.props;
         const {todoActions} = this.props;
         loadingActions.open(true);
         //todoActions.delete(value);
@@ -77,6 +80,7 @@ class Home extends Component<MyProps & MyState> {
         let intervalId = setInterval(() => {
             clearInterval(this.state.intervalId);
             todoActions.delete(value);
+            toastActions.open(true);
             loadingActions.close(false);
         }, time);
         this.setState({intervalId: intervalId});
@@ -191,7 +195,8 @@ class Home extends Component<MyProps & MyState> {
 const mapStateToProps = ({todo}: any) => ({todo});
 const mapDispatchToProps = (dispatch: any) => ({
     todoActions: bindActionCreators(todoActions, dispatch),
-    loadingActions: bindActionCreators(loadingActions, dispatch)
+    loadingActions: bindActionCreators(loadingActions, dispatch),
+    toastActions: bindActionCreators(toastActions, dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
