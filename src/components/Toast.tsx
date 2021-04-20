@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, SyntheticEvent} from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import {bindActionCreators} from 'redux';
@@ -15,22 +15,26 @@ interface MyState {
 
 class Toast extends Component<MyProps & MyState> {
 
-    handleClose = () => {
+    handleClose = (reason: any) => () => {
+        console.log(reason);
+        if (reason === 'clickaway') {
+            console.log('join');
+            return;
+        }
         const {toastActions} = this.props;
         toastActions.close(false);
     }
 
     render() {
         const {toast} = this.props;
-        console.log(toast);
         return (
             <Snackbar
                 anchorOrigin={{vertical: 'top', horizontal: 'right'}}
                 open={toast.toast}
                 autoHideDuration={6000}
-                onClose={this.handleClose}
+                onClose={this.handleClose('clickaway')}
             >
-                <Alert elevation={6} severity="success" variant={"filled"} onClose={this.handleClose}>
+                <Alert elevation={6} severity="success" variant={"filled"} onClose={this.handleClose('click')}>
                     This is a success message!
                 </Alert>
             </Snackbar>
