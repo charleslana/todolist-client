@@ -25,7 +25,6 @@ class Toast extends Component<MyProps & MyState> {
 
     render() {
         const {toast} = this.props;
-        console.log(toast);
         return (
             <Snackbar
                 anchorOrigin={{vertical: 'top', horizontal: 'right'}}
