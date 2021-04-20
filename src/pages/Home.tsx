@@ -84,6 +84,7 @@ class Home extends Component<MyProps & MyState> {
                 toast: true,
                 message: 'Deleted todo successfully.'
             }
+            toastActions.close(false);
             toastActions.open(toast);
             loadingActions.close(false);
         }, time);
