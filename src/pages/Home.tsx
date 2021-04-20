@@ -80,7 +80,11 @@ class Home extends Component<MyProps & MyState> {
         let intervalId = setInterval(() => {
             clearInterval(this.state.intervalId);
             todoActions.delete(value);
-            toastActions.open(true);
+            const toast = {
+                toast: true,
+                message: 'Deleted todo successfully.'
+            }
+            toastActions.open(toast);
             loadingActions.close(false);
         }, time);
         this.setState({intervalId: intervalId});

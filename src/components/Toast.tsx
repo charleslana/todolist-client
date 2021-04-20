@@ -25,6 +25,7 @@ class Toast extends Component<MyProps & MyState> {
 
     render() {
         const {toast} = this.props;
+        console.log(toast);
         return (
             <Snackbar
                 anchorOrigin={{vertical: 'top', horizontal: 'right'}}
@@ -33,7 +34,7 @@ class Toast extends Component<MyProps & MyState> {
                 onClose={this.handleClose}
             >
                 <Alert elevation={6} severity="success" variant={"filled"} onClose={this.handleClose}>
-                    This is a success message!
+                    {toast.message}
                 </Alert>
             </Snackbar>
         );

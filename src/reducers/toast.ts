@@ -4,15 +4,18 @@ export const types = {
 }
 
 export const initialState = {
-    toast: false
+    toast: false,
+    message: ''
 }
 
 const reducer = (state = initialState, action: any) => {
+    console.log(action);
     switch (action.type) {
         case types.OPEN:
             return {
                 ...state,
-                toast: true
+                toast: true,
+                message: action.toast.item.message
             }
         case types.CLOSE:
             return {
