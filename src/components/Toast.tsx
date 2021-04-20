@@ -1,4 +1,4 @@
-import React, {Component, SyntheticEvent} from 'react';
+import React, {Component} from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import {bindActionCreators} from 'redux';
