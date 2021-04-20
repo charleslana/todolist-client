@@ -15,10 +15,8 @@ interface MyState {
 
 class Toast extends Component<MyProps & MyState> {
 
-    handleClose = (reason: any) => () => {
-        console.log(reason);
+    handleClose = (event?: React.SyntheticEvent, reason?: string) => {
         if (reason === 'clickaway') {
-            console.log('join');
             return;
         }
         const {toastActions} = this.props;
@@ -31,10 +29,10 @@ class Toast extends Component<MyProps & MyState> {
             <Snackbar
                 anchorOrigin={{vertical: 'top', horizontal: 'right'}}
                 open={toast.toast}
-                autoHideDuration={6000}
-                onClose={this.handleClose('clickaway')}
+                autoHideDuration={5000}
+                onClose={this.handleClose}
             >
-                <Alert elevation={6} severity="success" variant={"filled"} onClose={this.handleClose('click')}>
+                <Alert elevation={6} severity="success" variant={"filled"} onClose={this.handleClose}>
                     This is a success message!
                 </Alert>
             </Snackbar>
